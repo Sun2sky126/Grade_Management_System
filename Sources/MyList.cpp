@@ -1,97 +1,183 @@
 /*
  *MyList.cpp
- *Created on 8/8/2020
+ *Created on 8/9/2020
  *Completed on ...
- *By SUN Hao
- *The definition of the class MyList
+ *By S.H.
+ *The definition of the class "MyList"
  */
 
 #include"MyList.h"
 
-//The constructor to initialize the object
-template<class T>
-MyList<T>::MyList(T _node_)
-    : node(_node_), pointer(NULL) {}
-
-//The constructor
-template<class T>
-MyList<T>::MyList() {}
-
-//The destructor
-template<class T>
-MyList<T>::~MyList() {
-    delete pointer;
-}
-
-//Create a new list(start from "this" pointer)
+//Constructor
 //INPUT: NONE
-//OUTPUT: 1 for success and 0 for failure
-
-//Append a node to the end
-//INPUT: The node to be appended
-//OUTPUT: 1 for success and 0 for failure
-template<class T>
-int MyList<T>::appendNode(T _node_) {
-    MyList * newNode = new MyList(_node_);
-    
-    //If newNode is null, the function fails
-    if (newNode == NULL) return 0;
-
-    //Set the loop
-    MyList * loop;
-    for (loop = this; loop = loop->pointer; loop != NULL)
-        loop = newNode;
-    
-    return 1;
-}
-
-//Insert a node to a certain location
-//INPUT: The node to be inserted, the order
-//OUTPUT: 1 for success and 0 for failure
-template<class T>
-int MyList<T>::insertNode(T _node_, int order) {
-    MyList * newNode = new MyList(_node_);
-
-    //If newNode is null, the function fails
-    if (newNode == NULL) return 0;
-
-    //Special situation: if the order is 0(add to the head), then use the function addNode()
-    if (order == 0) return addNode(_node_);
-
-    //Set the loop
-    int index;
-    MyList * loop = this;
-    for (index = 0; index++; index < order && loop != NULL)
-        loop = loop->pointer;
-    
-    //Insert the node
-    newNode->pointer = loop->pointer;
-    loop->pointer = newNode;
-
-    return 1;
-}
-
-//Add a node to the head
-//INPUT: The node to be added;
-//OUTPUT: 1 for success and 0 for failure
-template<class T>
-int MyList<T>::addNode(T _node_) {
-    MyList * newNode = new MyList(_node_);
-
-    //If newNode is null, the function fails.
-    if (newNode == NULL) return 0;
-
-    newNode->pointer = this;
-    this = newNode;
-}
-
-//Delete the node at a certain location
-//INPUT: The order
 //OUTPUT: NONE
 template<class T>
-void MyList<T>::deleteNode(int order) {
-    if (order == 0) {
-        MyList * head = this;
-        delete this;
+MyList<T>::MyList() {
+    //Create an empty list
+    this->headNode = NULL;
+    this->length = 0;
+}
+
+//Constructor
+//INPUT: The value of the node
+//OUTPUT: NONE
+template<class T>
+MyList<T>::MyList(T value) {
+    MyNode * newNode = new MyNode(value);
+    if (newNode != NULL) {
+        this->headNode = newNode;
+        this->length = 1;
     }
+    else {
+        this->headNode = NULL;
+        this->length = 0;
+    }
+}
+
+//Destructor
+//INPUT: NONE
+//OUTPUT: NONE
+template<class T>
+MyList<T>::~MyList() {}
+
+//Add a node
+//INPUT: The value to be added, the order of the location
+    //If order is n, the value will be added next to n
+//OUTPUT: 1 for success and 0 for failure
+template<class T>
+int MyList<T>::addNode(T value, int order) {
+    int index;
+    MyNode * node;
+
+    //Create the new node
+    MyNode * newNode = new MyNode(value);
+    if (newNode == NULL) return 0;
+
+    //Check whether the parameter is legal
+    if (order >= 0 && order <= this->length ) {
+        //Find the location
+        index = 0;
+        node = this->headNode;
+        while (index < order) {
+            node = node->getPointer();
+            index += 1;
+        }
+
+        //Insert the node
+        if (order < this->length) {
+            newNode->setPointer(node->getPointer());
+            node->setPointer(newNode);
+        }
+        else {
+            node->setPointer(newNode);
+        }
+
+        //Increase the length
+        length += 1;
+        return 1;
+    }
+    else return 0;
+}
+
+//Delete a node
+//INPUT: The order of the node to be deleted
+//OUTPUT: 1 for success and 0 for failure
+template<class T>
+int MyList<T>::deleteNode(int order) {
+    int index;
+    MyNode * node, * temp;
+
+    //Check whether the parameter is legal
+    if (order >= 1 && order <= this->length) {
+        //Find the location
+        index = 0;
+        node = this->headNode;
+        while (index < order - 1) {
+            node = node->getPointer();
+            index += 1;
+        }
+
+        //Delete the node
+        temp = node->getPointer()->getPointer();
+        delete node->getPointer();
+        node->setPointer(temp);
+
+        //Decrease the length
+        length -= 1;
+        return 1;
+    }
+    else return 0;
+}
+
+//Search a node
+//INPUT: The order of the node to be searched
+//OUTPUT: The pointer to the node
+template<class T>
+MyNode<T>* MyList<T>::searchNode(int order) {
+    int index;
+    MyNode * node;
+
+    //Check whether the parameter is legal
+    if (order >= 1 && order <= this->length) {
+        //Find the location
+        index = 0;
+        node = this->headNode;
+        while (index < order) {
+            node = node->getPointer();
+            index++;
+        }
+
+        //Return the pointer
+        return node;
+    }
+    else return NULL;
+}
+
+//Get the length of the list
+//INPUT: NONE
+//OUTPUT: The length
+template<class T>
+int MyList<T>::getLength() {
+    return this->length;
+}
+
+//Swap two nodes
+//INPUT: The order_1, the order_2
+//OUTPUT: 1 for success and 0 for failure
+template<class T>
+int MyList<T>::swapNodes(int order_1, int order_2) {
+    int index_1, index_2;
+    MyNode * temp_1, temp_1_next, temp_2, temp_2_next, node_1, node_2;
+
+    //Check whether the parameters are legal
+    if (order_1 >= 1 && order_1 <= this->length && order_2 >= 1 && order_2 <= this->length) {
+        if (order_1 == order_2) return 1;
+        else {
+            index_1 = 0;
+            node_1 = this->headNode;
+            while (index_1 < order_1 - 1) {
+                node_1 = node_1->getPointer();
+                index_1 += 1;
+            }
+            temp_1 = node_1->getPointer();
+            temp_1_next = temp_1->getPointer();
+
+            index_2 = 0;
+            node_2 = this->headNode;
+            while (index_2 < order_2 - 1) {
+                node_2 = node_2->getPointer();
+                index_2 += 1;
+            }
+            temp_2 = node_2->getPointer();
+            temp_2_next = temp_2->getPointer();
+
+            node_1->setPointer(temp_2);
+            temp_2->setPointer(temp_1_next);
+            node_2->setPointer(temp_1);
+            temp_1->setPointer(temp_2_next);
+
+            return 1;
+        }   
+    }
+    else return 0;
 }
