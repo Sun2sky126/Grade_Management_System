@@ -49,6 +49,11 @@ class Student : public People {
     //INPUT: NONE
     //OUTPUT: Student's GPA
     double getGPA();
+
+    //Print student's information
+    //INPUT: NONE
+    //OUTPUT: The info of the student
+    virtual void printInfo();
 };
 
 #endif //_STUDENT_H_
