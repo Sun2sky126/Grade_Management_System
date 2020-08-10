@@ -11,6 +11,10 @@
 #define _PEOPLE_H_
 
 #include<string.h>
+#include<iostream>
+#include<iomanip>
+
+using namespace std;
 
 class People {
 
@@ -39,10 +43,22 @@ class People {
     virtual ~People();
 
     //Print people's information
-    virtual void printInfo() const = 0;
+    virtual void printInfo() = 0;
 
     //Get people's name
-    void getName();
+    //INPUT: NONE
+    //OUTPUT: People's name
+    char* getName();
+
+    //Get people's id
+    //INPUT: NONE
+    //OUTPUT: People's id
+    int getID();
+
+    //Get people's password
+    //INPUT: NONE
+    //OUTPUT: People's password
+    char* getPassword();
 };
 
 #endif //_STUDENT_H_
